@@ -1,0 +1,884 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ; Definitions  -- references to 'UM' are to the User Man
+                       ual.
+    2 00000000         
+    3 00000000         ; Timer Stuff -- UM, Table 173
+    4 00000000         
+    5 00000000 E0004000 
+                       T0      equ              0xE0004000  ; Timer 0 Base Addr
+                                                            ess
+    6 00000000 E0008000 
+                       T1      equ              0xE0008000
+    7 00000000         
+    8 00000000 00000000 
+                       IR      equ              0           ; Add this to a tim
+                                                            er's base address (
+                                                            instead of defining
+                                                             all individually)
+    9 00000000 00000004 
+                       TCR     equ              4
+   10 00000000 00000014 
+                       MCR     equ              0x14
+   11 00000000 00000018 
+                       MR0     equ              0x18
+   12 00000000         
+   13 00000000 00000002 
+                       TimerCommandReset
+                               equ              2           ;same idea as above
+                                                            
+   14 00000000 00000001 
+                       TimerCommandRun
+                               equ              1
+   15 00000000 00000003 
+                       TimerModeResetAndInterrupt
+                               equ              3
+   16 00000000 00000001 
+                       TimerResetTimer0Interrupt
+                               equ              1
+   17 00000000 000000FF 
+                       TimerResetAllInterrupts
+                               equ              0xFF
+   18 00000000         
+   19 00000000         ; VIC Stuff -- UM, Table 41
+   20 00000000 FFFFF000 
+                       VIC     equ              0xFFFFF000  ; VIC Base Address
+   21 00000000 00000010 
+                       IntEnable
+                               equ              0x10        ;  Interrupt Enable
+                                                             Register. This reg
+                                                            ister controls whic
+                                                            h of the 32 interru
+                                                            pt requests and sof
+                                                            tware interrupts ar
+                                                            e enabled to contri
+                                                            bute to FIQ or IRQ.
+                                                            
+   22 00000000 00000030 
+                       VectAddr
+                               equ              0x30        ; Vector Address Re
+                                                            gister. When an IRQ
+                                                             interrupt occurs, 
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+                                                            the IRQ service rou
+                                                            tine can read this 
+                                                            register and jump t
+                                                            o the value read.
+   23 00000000 00000100 
+                       VectAddr0
+                               equ              0x100       ; Vector address 0 
+                                                            register. Vector Ad
+                                                            dress Registers 0-1
+                                                            5 hold the addresse
+                                                            s of the Interrupt 
+                                                            Service routines (I
+                                                            SRs) for the 16 vec
+                                                            tored IRQ slots.
+   24 00000000 00000200 
+                       VectCtrl0
+                               equ              0x200       ; Vector control 0 
+                                                            register. Vector Co
+                                                            ntrol Registers 0-1
+                                                            5 each control one 
+                                                            of the 16 vectored 
+                                                            IRQ slots. Slot 0 h
+                                                            as the highest prio
+                                                            rity and slot 15 th
+                                                            e lowest.
+   25 00000000         
+   26 00000000 00000004 
+                       Timer0ChannelNumber
+                               equ              4           ; UM, Table 63
+   27 00000000 00000010 
+                       Timer0Mask
+                               equ              1<<Timer0ChannelNumber 
+                                                            ; UM, Table 63
+   28 00000000 00000005 
+                       IRQslot_en
+                               equ              5           ; UM, Table 58
+   29 00000000         
+   30 00000000         
+   31 00000000 E0028008 
+                       IO0DIR  EQU              0xE0028008
+   32 00000000 E002800C 
+                       IO0CLR  EQU              0xE002800C
+   33 00000000 E0028004 
+                       IO0SET  EQU              0xE0028004
+   34 00000000 E0028010 
+                       I01PIN  EQU              0xE0028010
+   35 00000000 E0028018 
+                       IO1DIR  EQU              0xE0028018
+   36 00000000 E002801C 
+                       IO1CLR  EQU              0xE002801C
+   37 00000000 E0028014 
+                       IO1SET  EQU              0xE0028014
+   38 00000000         
+   39 00000000         
+   40 00000000         
+   41 00000000                 AREA             InitialisationAndMain, CODE, RE
+ADONLY
+   42 00000000                 IMPORT           main
+   43 00000000         
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+   44 00000000                 EXPORT           start
+   45 00000000         start
+   46 00000000         ; Set up for LED, VIC and timer
+   47 00000000         
+   48 00000000 E59F808C        ldr              r8,=IO0DIR
+   49 00000004 E3A09826        ldr              r9,=0x00260000 ;select RGB LED 
+                                                            pins (17, 18, 21)
+   50 00000008 E5889000        str              r9,[r8]     ;make them outputs
+   51 0000000C E59F8084        ldr              r8,=IO0SET
+   52 00000010 E5889000        str              r9,[r8]     ;set them to turn t
+                                                            he LEDs off
+   53 00000014 E59F9080        ldr              r9,=IO0CLR
+   54 00000018         
+   55 00000018         ;set up for input pins
+   56 00000018 E59F1080        ldr              r1,=IO1DIR
+   57 0000001C E3A0280F        ldr              r2,=0x000f0000 ;select P1.19--P
+                                                            1.16
+   58 00000020 E5812000        str              r2,[r1]     ;make them outputs
+   59 00000024 E59F1078        ldr              r1,=IO1SET
+   60 00000028 E5812000        str              r2,[r1]     ;set them to turn t
+                                                            he LEDs off
+   61 0000002C E59F2074        ldr              r2,=IO1CLR
+   62 00000030         ;/set up
+   63 00000030         
+   64 00000030         ; Initialise the VIC
+   65 00000030 E59F0074        ldr              r0,=VIC
+   66 00000034         
+   67 00000034 E59F1074        ldr              r1,=interrupt_handler 
+                                                            ;Irq handler
+   68 00000038 E5801100        str              r1,[r0,#VectAddr0] ; associate 
+                                                            our interrupt handl
+                                                            er with Vectored In
+                                                            terrupt 0
+   69 0000003C         
+   70 0000003C E3A01024        mov              r1,#Timer0ChannelNumber+(1<<IRQ
+slot_en)
+   71 00000040 E5801200        str              r1,[r0,#VectCtrl0] ; make Timer
+                                                             0 interrupts the s
+                                                            ource of Vectored I
+                                                            nterrupt 0
+   72 00000044         
+   73 00000044 E3A01010        mov              r1,#Timer0Mask
+   74 00000048 E5801010        str              r1,[r0,#IntEnable] ; enable Tim
+                                                            er 0 interrupts to 
+                                                            be recognised by th
+                                                            e VIC
+   75 0000004C         
+   76 0000004C E3A01000        mov              r1,#0
+   77 00000050 E5801030        str              r1,[r0,#VectAddr] ; remove any 
+                                                            pending interrupt (
+                                                            Just in case)
+   78 00000054         
+   79 00000054         ; Initialise Timer 0
+   80 00000054 E59F0058        ldr              r0,=T0
+   81 00000058         
+   82 00000058 E3A01002        mov              r1,#TimerCommandReset
+   83 0000005C E5801004        str              r1,[r0,#TCR]
+   84 00000060         
+   85 00000060 E3A010FF        mov              r1,#TimerResetAllInterrupts
+
+
+
+ARM Macro Assembler    Page 4 
+
+
+   86 00000064 E5801000        str              r1,[r0,#IR]
+   87 00000068         
+   88 00000068 E59F1048        ldr              r1,=(14745600/200)-1 ; 5 ms = 1
+                                                            /200 second = (1474
+                                                            5600/200)-1 (basica
+                                                            lly, whenever the s
+                                                            ystem timer equals 
+                                                            this weird number, 
+                                                            5ms have passed)
+   89 0000006C E5801018        str              r1,[r0,#MR0]
+   90 00000070         
+   91 00000070 E3A01003        mov              r1,#TimerModeResetAndInterrupt
+   92 00000074 E5801014        str              r1,[r0,#MCR]
+   93 00000078         
+   94 00000078 E3A01001        mov              r1,#TimerCommandRun
+   95 0000007C E5801004        str              r1,[r0,#TCR]
+   96 00000080         
+   97 00000080         
+   98 00000080 E3A02001        ldr              r2, =1      ;up/down flag
+   99 00000084 E3A01001        ldr              r1, =1      ;which light
+  100 00000088 E3A00826        ldr              r0, =0x00260000 ;mask to turn o
+                                                            ff all LED
+  101 0000008C         
+  102 0000008C         ;from here, initialisation is finished, so it should be 
+                       the main body of the main program
+  103 0000008C         
+  104 0000008C         aloop
+  105 0000008C EBFFFFFE        bl               subroutine
+  106 00000090 EAFFFFFD        b                aloop       ; branch always
+  107 00000094         ;main program execution will never drop below the statem
+                       ent above.
+  108 00000094         
+  109 00000094 E0028008 
+              E0028004 
+              E002800C 
+              E0028018 
+              E0028014 
+              E002801C 
+              FFFFF000 
+              00000000 
+              E0004000 
+              00011FFF         AREA             InterruptStuff, CODE, READONLY
+  110 00000000 E24EE004 
+                       interrupt_handler
+                               sub              lr,lr,#4
+  111 00000004 E92D400F        stmfd            sp!,{r0-r3,lr} ; the lr will be
+                                                             restored to the pc
+                                                             --> saving the wor
+                                                            kspace to the stack
+                                                            
+  112 00000008         
+  113 00000008 E59F2024        ldr              r2, =counter
+  114 0000000C E5923000        ldr              r3, [r2]
+  115 00000010 E2833001        add              r3, r3, #1  ;increment counter
+  116 00000014 E5823000        str              r3, [r2]    ;Store new counter 
+                                                            value
+  117 00000018         
+  118 00000018         ;this is where we stop the timer from making the interru
+                       pt request to the VIC
+
+
+
+ARM Macro Assembler    Page 5 
+
+
+  119 00000018         ;i.e. we 'acknowledge' the interrupt
+  120 00000018 E59F0018        ldr              r0,=T0
+  121 0000001C E3A01001        mov              r1,#TimerResetTimer0Interrupt
+  122 00000020 E5801000        str              r1,[r0,#IR] ; remove MR0 interr
+                                                            upt request from ti
+                                                            mer
+  123 00000024         
+  124 00000024         ;here we stop the VIC from making the interrupt request 
+                       to the CPU:
+  125 00000024 E59F0010        ldr              r0,=VIC
+  126 00000028 E3A01000        mov              r1,#0
+  127 0000002C E5801030        str              r1,[r0,#VectAddr] ; reset VIC  
+                                                             -->Clearing it  
+  128 00000030 E8FD800F        ldmfd            sp!,{r0-r3,pc}^ ; return from i
+                                                            nterrupt, restoring
+                                                             previous state
+  129 00000034         ; and also restoring the CPSR
+  130 00000034         
+  131 00000034 00000000 
+              E0004000 
+              FFFFF000         AREA             Subroutines, CODE, READONLY
+  132 00000000         subroutine
+  133 00000000         
+  134 00000000         
+  135 00000000         
+  136 00000000 E59F70D0        ldr              r7, =I01PIN ;Get button press
+  137 00000004 E5974000        ldr              r4, [r7]
+  138 00000008 E3A0760F        ldr              r7, =0x00f00000
+  139 0000000C E0044007        and              r4, r4, r7
+  140 00000010 E0244007        eor              r4, r4, r7
+  141 00000014 E3540000        cmp              r4, #0x00000000
+  142 00000018 0A000004        BEQ              nobutton
+  143 0000001C         
+  144 0000001C E3520001        cmp              r2, #1
+  145 00000020 0A000001        BEQ              reverse_zero
+  146 00000024 E3A02001        ldr              r2, =1
+  147 00000028 EA000000        B                nobutton
+  148 0000002C         reverse_zero
+  149 0000002C E3A02000        ldr              r2, =0
+  150 00000030         
+  151 00000030         nobutton
+  152 00000030         
+  153 00000030         
+  154 00000030         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                       ;;;;;;;;;;;;;;;
+  155 00000030         ;This happens every 0.25 seconds
+  156 00000030 E59FB0A4        ldr              r11, =counter
+  157 00000034 E59BC000        ldr              r12, [r11]
+  158 00000038 E35C0032        cmp              r12, #50    ;Count to 50 --> 50
+                                                            *5ms = .25s
+  159 0000003C 1AFFFFEF        bne              subroutine
+  160 00000040         
+  161 00000040         
+  162 00000040 E5880000        str              r0, [r8]    ;clear LED
+  163 00000044         
+  164 00000044 E3510001        cmp              r1, #1
+  165 00000048 0A000003        BEQ              red_on
+  166 0000004C E3510002        cmp              r1, #2
+  167 00000050 0A000003        BEQ              blue_on
+
+
+
+ARM Macro Assembler    Page 6 
+
+
+  168 00000054 E3510003        cmp              r1, #3
+  169 00000058 0A000003        BEQ              green_on
+  170 0000005C         
+  171 0000005C         red_on
+  172 0000005C E3A03802        ldr              r3, =0x00020000
+  173 00000060 EA000003        B                increment
+  174 00000064         blue_on
+  175 00000064 E3A03701        ldr              r3, =0x00040000
+  176 00000068 EA000001        B                increment
+  177 0000006C         green_on
+  178 0000006C E3A03602        ldr              r3, =0x00200000
+  179 00000070 EAFFFFFF        B                increment
+  180 00000074         
+  181 00000074         
+  182 00000074         increment
+  183 00000074         
+  184 00000074 E3520001        cmp              r2, #1      ;R -> B -> G
+  185 00000078 1A000004        BNE              down_loop
+  186 0000007C E2811001        add              r1, r1, #1
+  187 00000080 E3510004        cmp              r1, #4
+  188 00000084 1A000000        BNE              set_zero
+  189 00000088 E3A01001        ldr              r1, =1
+  190 0000008C         set_zero
+  191 0000008C EA000003        B                light
+  192 00000090         
+  193 00000090         
+  194 00000090         down_loop
+  195 00000090 E2411001        sub              r1, r1, #1  ;G -> B -> R
+  196 00000094 E3510000        cmp              r1, #0
+  197 00000098 1A000000        BNE              set_four
+  198 0000009C E3A01003        ldr              r1, =3
+  199 000000A0         set_four
+  200 000000A0         
+  201 000000A0         light
+  202 000000A0 E3530802        cmp              r3, #0x00020000
+  203 000000A4 1A000001        bne              dont_need_to_turn_off_last
+  204 000000A8 E3A06826        ldr              r6, =0x00260000
+  205 000000AC E5886000        str              r6,[r8]     ;set the bit -> tur
+                                                            n off the LED
+  206 000000B0         
+  207 000000B0         dont_need_to_turn_off_last
+  208 000000B0         
+  209 000000B0 E5893000        str              r3,[r9]     ; clear the bit -> 
+                                                            turn on the LED
+  210 000000B4 E153000B        cmp              r3,r11      ;If current value i
+                                                            s same of mask valu
+                                                            e
+  211 000000B8 1A000002        bne              dontstartagain
+  212 000000BC E59FA01C        ldr              r10, = shift_counter
+  213 000000C0 E3E0C000        mov              r12, #-1
+  214 000000C4 E58AC000        str              r12, [r10]
+  215 000000C8         
+  216 000000C8         dontstartagain
+  217 000000C8 E3A0C000        mov              r12, #0     ;Restarting the cou
+                                                            nter to 1 second
+  218 000000CC E59FB008        ldr              r11, =counter
+  219 000000D0 E58BC000        str              r12, [r11]  ;Stores zero value 
+                                                            into counter
+  220 000000D4         
+
+
+
+ARM Macro Assembler    Page 7 
+
+
+  221 000000D4 E12FFF1E        bx               lr
+  222 000000D8         
+  223 000000D8 E0028010 
+              00000000 
+              00000000 
+              00000000         AREA             Stuff, DATA, READWRITE
+  224 00000000 00000000 
+                       counter dcd              0           ;Set the value to 0
+                                                            
+  225 00000004 FFFFFFFF 
+                       shift_counter
+                               dcd              -1          ;Set the value to 0
+                                                            
+  226 00000008                 END
+Command Line: --debug --xref --apcs=interwork --depend=App.d -oApp.o -IC:\Keil\
+ARM\INC -IC:\Keil\ARM\INC\Philips --predefine="__EVAL SETA 1" --predefine="__MI
+CROLIB SETA 1" --list=.\Listings\App.lst App.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+InitialisationAndMain 00000000
+
+Symbol: InitialisationAndMain
+   Definitions
+      At line 41 in file App.s
+   Uses
+      None
+Comment: InitialisationAndMain unused
+aloop 0000008C
+
+Symbol: aloop
+   Definitions
+      At line 104 in file App.s
+   Uses
+      At line 106 in file App.s
+Comment: aloop used once
+start 00000000
+
+Symbol: start
+   Definitions
+      At line 45 in file App.s
+   Uses
+      At line 44 in file App.s
+Comment: start used once
+3 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+InterruptStuff 00000000
+
+Symbol: InterruptStuff
+   Definitions
+      At line 109 in file App.s
+   Uses
+      None
+Comment: InterruptStuff unused
+interrupt_handler 00000000
+
+Symbol: interrupt_handler
+   Definitions
+      At line 110 in file App.s
+   Uses
+      At line 67 in file App.s
+Comment: interrupt_handler used once
+2 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+Subroutines 00000000
+
+Symbol: Subroutines
+   Definitions
+      At line 131 in file App.s
+   Uses
+      None
+Comment: Subroutines unused
+blue_on 00000064
+
+Symbol: blue_on
+   Definitions
+      At line 174 in file App.s
+   Uses
+      At line 167 in file App.s
+Comment: blue_on used once
+dont_need_to_turn_off_last 000000B0
+
+Symbol: dont_need_to_turn_off_last
+   Definitions
+      At line 207 in file App.s
+   Uses
+      At line 203 in file App.s
+Comment: dont_need_to_turn_off_last used once
+dontstartagain 000000C8
+
+Symbol: dontstartagain
+   Definitions
+      At line 216 in file App.s
+   Uses
+      At line 211 in file App.s
+Comment: dontstartagain used once
+down_loop 00000090
+
+Symbol: down_loop
+   Definitions
+      At line 194 in file App.s
+   Uses
+      At line 185 in file App.s
+Comment: down_loop used once
+green_on 0000006C
+
+Symbol: green_on
+   Definitions
+      At line 177 in file App.s
+   Uses
+      At line 169 in file App.s
+Comment: green_on used once
+increment 00000074
+
+Symbol: increment
+   Definitions
+      At line 182 in file App.s
+   Uses
+      At line 173 in file App.s
+      At line 176 in file App.s
+      At line 179 in file App.s
+
+light 000000A0
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Relocatable symbols
+
+
+Symbol: light
+   Definitions
+      At line 201 in file App.s
+   Uses
+      At line 191 in file App.s
+Comment: light used once
+nobutton 00000030
+
+Symbol: nobutton
+   Definitions
+      At line 151 in file App.s
+   Uses
+      At line 142 in file App.s
+      At line 147 in file App.s
+
+red_on 0000005C
+
+Symbol: red_on
+   Definitions
+      At line 171 in file App.s
+   Uses
+      At line 165 in file App.s
+Comment: red_on used once
+reverse_zero 0000002C
+
+Symbol: reverse_zero
+   Definitions
+      At line 148 in file App.s
+   Uses
+      At line 145 in file App.s
+Comment: reverse_zero used once
+set_four 000000A0
+
+Symbol: set_four
+   Definitions
+      At line 199 in file App.s
+   Uses
+      At line 197 in file App.s
+Comment: set_four used once
+set_zero 0000008C
+
+Symbol: set_zero
+   Definitions
+      At line 190 in file App.s
+   Uses
+      At line 188 in file App.s
+Comment: set_zero used once
+subroutine 00000000
+
+Symbol: subroutine
+   Definitions
+      At line 132 in file App.s
+   Uses
+      At line 105 in file App.s
+      At line 159 in file App.s
+
+14 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+Stuff 00000000
+
+Symbol: Stuff
+   Definitions
+      At line 223 in file App.s
+   Uses
+      None
+Comment: Stuff unused
+counter 00000000
+
+Symbol: counter
+   Definitions
+      At line 224 in file App.s
+   Uses
+      At line 113 in file App.s
+      At line 156 in file App.s
+      At line 218 in file App.s
+
+shift_counter 00000004
+
+Symbol: shift_counter
+   Definitions
+      At line 225 in file App.s
+   Uses
+      At line 212 in file App.s
+Comment: shift_counter used once
+3 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+I01PIN E0028010
+
+Symbol: I01PIN
+   Definitions
+      At line 34 in file App.s
+   Uses
+      At line 136 in file App.s
+Comment: I01PIN used once
+IO0CLR E002800C
+
+Symbol: IO0CLR
+   Definitions
+      At line 32 in file App.s
+   Uses
+      At line 53 in file App.s
+Comment: IO0CLR used once
+IO0DIR E0028008
+
+Symbol: IO0DIR
+   Definitions
+      At line 31 in file App.s
+   Uses
+      At line 48 in file App.s
+Comment: IO0DIR used once
+IO0SET E0028004
+
+Symbol: IO0SET
+   Definitions
+      At line 33 in file App.s
+   Uses
+      At line 51 in file App.s
+Comment: IO0SET used once
+IO1CLR E002801C
+
+Symbol: IO1CLR
+   Definitions
+      At line 36 in file App.s
+   Uses
+      At line 61 in file App.s
+Comment: IO1CLR used once
+IO1DIR E0028018
+
+Symbol: IO1DIR
+   Definitions
+      At line 35 in file App.s
+   Uses
+      At line 56 in file App.s
+Comment: IO1DIR used once
+IO1SET E0028014
+
+Symbol: IO1SET
+   Definitions
+      At line 37 in file App.s
+   Uses
+      At line 59 in file App.s
+Comment: IO1SET used once
+IR 00000000
+
+Symbol: IR
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Absolute symbols
+
+   Definitions
+      At line 8 in file App.s
+   Uses
+      At line 86 in file App.s
+      At line 122 in file App.s
+
+IRQslot_en 00000005
+
+Symbol: IRQslot_en
+   Definitions
+      At line 28 in file App.s
+   Uses
+      At line 70 in file App.s
+Comment: IRQslot_en used once
+IntEnable 00000010
+
+Symbol: IntEnable
+   Definitions
+      At line 21 in file App.s
+   Uses
+      At line 74 in file App.s
+Comment: IntEnable used once
+MCR 00000014
+
+Symbol: MCR
+   Definitions
+      At line 10 in file App.s
+   Uses
+      At line 92 in file App.s
+Comment: MCR used once
+MR0 00000018
+
+Symbol: MR0
+   Definitions
+      At line 11 in file App.s
+   Uses
+      At line 89 in file App.s
+Comment: MR0 used once
+T0 E0004000
+
+Symbol: T0
+   Definitions
+      At line 5 in file App.s
+   Uses
+      At line 80 in file App.s
+      At line 120 in file App.s
+
+T1 E0008000
+
+Symbol: T1
+   Definitions
+      At line 6 in file App.s
+   Uses
+      None
+Comment: T1 unused
+TCR 00000004
+
+Symbol: TCR
+   Definitions
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Absolute symbols
+
+      At line 9 in file App.s
+   Uses
+      At line 83 in file App.s
+      At line 95 in file App.s
+
+Timer0ChannelNumber 00000004
+
+Symbol: Timer0ChannelNumber
+   Definitions
+      At line 26 in file App.s
+   Uses
+      At line 27 in file App.s
+      At line 70 in file App.s
+
+Timer0Mask 00000010
+
+Symbol: Timer0Mask
+   Definitions
+      At line 27 in file App.s
+   Uses
+      At line 73 in file App.s
+Comment: Timer0Mask used once
+TimerCommandReset 00000002
+
+Symbol: TimerCommandReset
+   Definitions
+      At line 13 in file App.s
+   Uses
+      At line 82 in file App.s
+Comment: TimerCommandReset used once
+TimerCommandRun 00000001
+
+Symbol: TimerCommandRun
+   Definitions
+      At line 14 in file App.s
+   Uses
+      At line 94 in file App.s
+Comment: TimerCommandRun used once
+TimerModeResetAndInterrupt 00000003
+
+Symbol: TimerModeResetAndInterrupt
+   Definitions
+      At line 15 in file App.s
+   Uses
+      At line 91 in file App.s
+Comment: TimerModeResetAndInterrupt used once
+TimerResetAllInterrupts 000000FF
+
+Symbol: TimerResetAllInterrupts
+   Definitions
+      At line 17 in file App.s
+   Uses
+      At line 85 in file App.s
+Comment: TimerResetAllInterrupts used once
+TimerResetTimer0Interrupt 00000001
+
+Symbol: TimerResetTimer0Interrupt
+   Definitions
+      At line 16 in file App.s
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+Absolute symbols
+
+   Uses
+      At line 121 in file App.s
+Comment: TimerResetTimer0Interrupt used once
+VIC FFFFF000
+
+Symbol: VIC
+   Definitions
+      At line 20 in file App.s
+   Uses
+      At line 65 in file App.s
+      At line 125 in file App.s
+
+VectAddr 00000030
+
+Symbol: VectAddr
+   Definitions
+      At line 22 in file App.s
+   Uses
+      At line 77 in file App.s
+      At line 127 in file App.s
+
+VectAddr0 00000100
+
+Symbol: VectAddr0
+   Definitions
+      At line 23 in file App.s
+   Uses
+      At line 68 in file App.s
+Comment: VectAddr0 used once
+VectCtrl0 00000200
+
+Symbol: VectCtrl0
+   Definitions
+      At line 24 in file App.s
+   Uses
+      At line 71 in file App.s
+Comment: VectCtrl0 used once
+26 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+main 00000000
+
+Symbol: main
+   Definitions
+      At line 42 in file App.s
+   Uses
+      None
+Comment: main unused
+1 symbol
+381 symbols in table

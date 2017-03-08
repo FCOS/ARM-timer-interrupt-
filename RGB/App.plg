@@ -1,0 +1,169 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+C:\Users\ferga\Desktop\Engineering\Year 3\3D2\lab5\RGB\App.uvproj
+Project File Date:  02/12/2017
+
+<h2>Output:</h2>
+Build target 'Sample'
+assembling App.s...
+linking...
+Program Size: Code=1192 RO-data=32 RW-data=12 ZI-data=1164  
+FromELF: creating hex file...
+"App.axf" - 0 Error(s), 0 Warning(s).
+"C:\Program Files (x86)\Flash Magic\FM.EXE" @fmsettings.txt
+Flash Magic Version 10.01.4469
+8051/XA Driver Version 3.50.3965
+ARM UART Driver Version 5.00.3965
+ARM Cortex UART Driver Version 7.36.4469
+ARM Ethernet Driver Version 2.21.3980
+ARM Cortex Ethernet Driver Version 2.60.3885
+ARM CAN Driver Version 2.25.3660
+(C) Embedded Systems Academy 2000-2017 All rights reserved
+NON PRODUCTION USE ONLY
+Connection failed: comms error (Unable to communicate. (in use))
+Build target 'Sample'
+assembling App.s...
+linking...
+Program Size: Code=1192 RO-data=32 RW-data=12 ZI-data=1164  
+FromELF: creating hex file...
+"App.axf" - 0 Error(s), 0 Warning(s).
+"C:\Program Files (x86)\Flash Magic\FM.EXE" @fmsettings.txt
+Flash Magic Version 10.01.4469
+8051/XA Driver Version 3.50.3965
+ARM UART Driver Version 5.00.3965
+ARM Cortex UART Driver Version 7.36.4469
+ARM Ethernet Driver Version 2.21.3980
+ARM Cortex Ethernet Driver Version 2.60.3885
+ARM CAN Driver Version 2.25.3660
+(C) Embedded Systems Academy 2000-2017 All rights reserved
+NON PRODUCTION USE ONLY
+Connection failed: comms error (Unable to communicate. (in use))
+Build target 'Sample'
+assembling App.s...
+linking...
+Program Size: Code=1192 RO-data=32 RW-data=12 ZI-data=1164  
+FromELF: creating hex file...
+"App.axf" - 0 Error(s), 0 Warning(s).
+"C:\Program Files (x86)\Flash Magic\FM.EXE" @fmsettings.txt
+Flash Magic Version 10.01.4469
+8051/XA Driver Version 3.50.3965
+ARM UART Driver Version 5.00.3965
+ARM Cortex UART Driver Version 7.36.4469
+ARM Ethernet Driver Version 2.21.3980
+ARM Cortex Ethernet Driver Version 2.60.3885
+ARM CAN Driver Version 2.25.3660
+(C) Embedded Systems Academy 2000-2017 All rights reserved
+NON PRODUCTION USE ONLY
+Connected
+Device selected
+Erase complete (USED)
+Hex file programming complete (App.hex)
+Verify passed (App.hex)
+Build target 'Sample'
+assembling App.s...
+linking...
+Program Size: Code=1192 RO-data=32 RW-data=12 ZI-data=1164  
+FromELF: creating hex file...
+"App.axf" - 0 Error(s), 0 Warning(s).
+"C:\Program Files (x86)\Flash Magic\FM.EXE" @fmsettings.txt
+Flash Magic Version 10.01.4469
+8051/XA Driver Version 3.50.3965
+ARM UART Driver Version 5.00.3965
+ARM Cortex UART Driver Version 7.36.4469
+ARM Ethernet Driver Version 2.21.3980
+ARM Cortex Ethernet Driver Version 2.60.3885
+ARM CAN Driver Version 2.25.3660
+(C) Embedded Systems Academy 2000-2017 All rights reserved
+NON PRODUCTION USE ONLY
+Connected
+Device selected
+Erase complete (USED)
+Hex file programming complete (App.hex)
+Verify passed (App.hex)
+Build target 'Sample'
+assembling App.s...
+linking...
+Program Size: Code=1192 RO-data=32 RW-data=12 ZI-data=1164  
+FromELF: creating hex file...
+"App.axf" - 0 Error(s), 0 Warning(s).
+"C:\Program Files (x86)\Flash Magic\FM.EXE" @fmsettings.txt
+Flash Magic Version 10.01.4469
+8051/XA Driver Version 3.50.3965
+ARM UART Driver Version 5.00.3965
+ARM Cortex UART Driver Version 7.36.4469
+ARM Ethernet Driver Version 2.21.3980
+ARM Cortex Ethernet Driver Version 2.60.3885
+ARM CAN Driver Version 2.25.3660
+(C) Embedded Systems Academy 2000-2017 All rights reserved
+NON PRODUCTION USE ONLY
+Connected
+Device selected
+Erase complete (USED)
+Hex file programming complete (App.hex)
+Verify passed (App.hex)
+Build target 'Sample'
+assembling App.s...
+linking...
+Program Size: Code=1192 RO-data=32 RW-data=12 ZI-data=1164  
+FromELF: creating hex file...
+"App.axf" - 0 Error(s), 0 Warning(s).
+"C:\Program Files (x86)\Flash Magic\FM.EXE" @fmsettings.txt
+Flash Magic Version 10.01.4469
+8051/XA Driver Version 3.50.3965
+ARM UART Driver Version 5.00.3965
+ARM Cortex UART Driver Version 7.36.4469
+ARM Ethernet Driver Version 2.21.3980
+ARM Cortex Ethernet Driver Version 2.60.3885
+ARM CAN Driver Version 2.25.3660
+(C) Embedded Systems Academy 2000-2017 All rights reserved
+NON PRODUCTION USE ONLY
+Connected
+Device selected
+Erase complete (USED)
+Hex file programming complete (App.hex)
+Verify passed (App.hex)
+Build target 'Sample'
+assembling App.s...
+linking...
+Program Size: Code=1192 RO-data=32 RW-data=12 ZI-data=1164  
+FromELF: creating hex file...
+"App.axf" - 0 Error(s), 0 Warning(s).
+"C:\Program Files (x86)\Flash Magic\FM.EXE" @fmsettings.txt
+Flash Magic Version 10.01.4469
+8051/XA Driver Version 3.50.3965
+ARM UART Driver Version 5.00.3965
+ARM Cortex UART Driver Version 7.36.4469
+ARM Ethernet Driver Version 2.21.3980
+ARM Cortex Ethernet Driver Version 2.60.3885
+ARM CAN Driver Version 2.25.3660
+(C) Embedded Systems Academy 2000-2017 All rights reserved
+NON PRODUCTION USE ONLY
+Connected
+Device selected
+Erase complete (USED)
+Hex file programming complete (App.hex)
+Verify passed (App.hex)
+Build target 'Sample'
+assembling App.s...
+linking...
+Program Size: Code=1192 RO-data=32 RW-data=12 ZI-data=1164  
+FromELF: creating hex file...
+"App.axf" - 0 Error(s), 0 Warning(s).
+"C:\Program Files (x86)\Flash Magic\FM.EXE" @fmsettings.txt
+Flash Magic Version 10.01.4469
+8051/XA Driver Version 3.50.3965
+ARM UART Driver Version 5.00.3965
+ARM Cortex UART Driver Version 7.36.4469
+ARM Ethernet Driver Version 2.21.3980
+ARM Cortex Ethernet Driver Version 2.60.3885
+ARM CAN Driver Version 2.25.3660
+(C) Embedded Systems Academy 2000-2017 All rights reserved
+NON PRODUCTION USE ONLY
+Connected
+Device selected
+Erase complete (USED)
+Hex file programming complete (App.hex)
+Verify passed (App.hex)
